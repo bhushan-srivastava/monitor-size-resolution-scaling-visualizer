@@ -1,183 +1,401 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Display Scaling Visualizer</title>
-  <link rel="stylesheet" href="style.css" />
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Display Scaling Visualizer</title>
+    <style>
+        :root {
+            --bg-page: #121214;
+            --bg-card: #18181b;
+            --bg-panel: #202024;
+            --text-main: #f4f4f5;
+            --text-muted: #a1a1aa;
+            
+            --m1-color: #4facfe;
+            --m2-color: #43e97b;
+            --m3-color: #a18cd1;
+        }
+
+        body {
+            background-color: var(--bg-page);
+            color: var(--text-main);
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            margin: 0;
+            padding: 40px 20px;
+            display: flex;
+            justify-content: center;
+        }
+
+        .container {
+            background-color: var(--bg-card);
+            border-radius: 16px;
+            padding: 30px;
+            width: 100%;
+            max-width: 1100px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.5);
+        }
+
+        /* Header */
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 24px;
+        }
+
+        .header h1 {
+            margin: 0;
+            font-size: 22px;
+            font-weight: 600;
+        }
+
+        .workspaces {
+            display: flex;
+            gap: 24px;
+            font-family: monospace;
+            font-size: 15px;
+        }
+
+        .workspace-col {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .workspace-col .label {
+            color: var(--text-muted);
+            font-size: 11px;
+            font-family: sans-serif;
+            margin-bottom: 4px;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+        }
+
+        .workspace-col .value { font-weight: bold; }
+
+        .subtitle {
+            color: var(--text-muted);
+            font-size: 14px;
+            line-height: 1.5;
+            margin-bottom: 40px;
+        }
+
+        /* Visualizer Stage */
+        .stage {
+            display: flex;
+            justify-content: space-around;
+            align-items: flex-end;
+            min-height: 280px;
+            margin-bottom: 40px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid #333;
+        }
+
+        .monitor-group {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 30%;
+        }
+
+        .diag-label {
+            border: 2px solid;
+            border-radius: 20px;
+            padding: 4px 16px;
+            font-size: 12px;
+            font-weight: bold;
+            margin-bottom: 16px;
+            background-color: var(--bg-card);
+        }
+
+        .monitor-bezel {
+            border: 2px solid;
+            background-color: rgba(255, 255, 255, 0.05);
+            position: relative;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            box-sizing: border-box;
+            transition: all 0.2s ease;
+        }
+
+        .app-window {
+            border: 2px solid;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 12px;
+            text-align: center;
+            box-sizing: border-box;
+            overflow: hidden;
+            white-space: nowrap;
+            transition: all 0.2s ease;
+        }
+
+        .stats {
+            margin-top: 20px;
+            text-align: center;
+            font-size: 13px;
+            color: var(--text-muted);
+            line-height: 1.6;
+        }
+
+        .stats strong {
+            display: block;
+            color: var(--text-main);
+            font-size: 16px;
+            margin-bottom: 4px;
+        }
+
+        /* Dynamic Theme Assignments */
+        .theme-m1 .diag-label, .theme-m1 .monitor-bezel, .theme-m1 .app-window { border-color: var(--m1-color); }
+        .theme-m2 .diag-label, .theme-m2 .monitor-bezel, .theme-m2 .app-window { border-color: var(--m2-color); }
+        .theme-m3 .diag-label, .theme-m3 .monitor-bezel, .theme-m3 .app-window { border-color: var(--m3-color); }
+        
+        .theme-m1 .app-window { background-color: rgba(79, 172, 254, 0.2); }
+        .theme-m2 .app-window { background-color: rgba(67, 233, 123, 0.2); }
+        .theme-m3 .app-window { background-color: rgba(161, 140, 209, 0.2); }
+
+        /* Controls */
+        .controls {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+        }
+
+        .control-panel {
+            background-color: var(--bg-panel);
+            padding: 20px;
+            border-radius: 12px;
+        }
+
+        .control-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 16px;
+        }
+        .control-row:last-child { margin-bottom: 0; }
+
+        .control-row label {
+            width: 90px;
+            font-size: 13px;
+            color: var(--text-muted);
+        }
+
+        .control-row input[type="range"] {
+            flex: 1;
+            margin: 0 12px;
+            accent-color: #666;
+            cursor: pointer;
+        }
+
+        .control-row input[type="number"] {
+            width: 50px;
+            background-color: transparent;
+            border: 1px solid #444;
+            color: var(--text-main);
+            padding: 6px 8px;
+            border-radius: 6px;
+            text-align: center;
+            font-family: monospace;
+            font-size: 13px;
+        }
+        .control-row input[type="number"]:focus {
+            outline: none;
+            border-color: #888;
+        }
+
+        /* Status Colors */
+        .status-balanced { color: #43e97b; }
+        .status-tiny { color: #ff6b6b; }
+        .status-large { color: #feca57; }
+
+    </style>
 </head>
 <body>
 
-<div class="app">
-
-  <div class="topbar">
-    <h1>Display Scaling Visualizer</h1>
-
-    <div class="work-grid">
-      <div>
-        <span>M1 WORK</span>
-        <strong id="m1work">1920x1080</strong>
-      </div>
-
-      <div>
-        <span>M2 WORK</span>
-        <strong id="m2work">2048x1152</strong>
-      </div>
-
-      <div>
-        <span>M3 WORK</span>
-        <strong id="m3work">1097x686</strong>
-      </div>
-    </div>
-  </div>
-
-  <div class="visualizer">
-
-    <div class="label">
-      Visualized: Physical Scale Comparison<br>
-      Box: 800x600 Logical Window size
+<div class="container">
+    <div class="header">
+        <h1>Display Scaling Visualizer</h1>
+        <div class="workspaces">
+            <div class="workspace-col"><span class="label">M1 Work</span><span class="value" id="m1-work">1920x1080</span></div>
+            <div class="workspace-col"><span class="label">M2 Work</span><span class="value" id="m2-work">2048x1152</span></div>
+            <div class="workspace-col"><span class="label">M3 Work</span><span class="value" id="m3-work">1097x686</span></div>
+        </div>
     </div>
 
-    <div class="monitors" id="monitors">
-
-      <div class="monitor-wrap">
-        <div class="size-pill" id="m1sizeLabel">24"</div>
-
-        <div class="monitor" id="monitor1">
-          <div class="window blue">800x600 App</div>
-        </div>
-
-        <div class="monitor-title">Monitor 1</div>
-
-        <div class="meta">
-          Density: <span id="m1ppi">92</span> PPI
-        </div>
-
-        <div class="meta">
-          Scale: <span id="m1scaleText">100</span>%
-        </div>
-
-        <div class="ui green">
-          UI Index: <span id="m1ui">1.05</span> (Balanced)
-        </div>
-      </div>
-
-      <div class="monitor-wrap">
-        <div class="size-pill green-pill" id="m2sizeLabel">24"</div>
-
-        <div class="monitor" id="monitor2">
-          <div class="window green-window">800x600 App</div>
-        </div>
-
-        <div class="monitor-title">Monitor 2</div>
-
-        <div class="meta">
-          Density: <span id="m2ppi">122</span> PPI
-        </div>
-
-        <div class="meta">
-          Scale: <span id="m2scaleText">125</span>%
-        </div>
-
-        <div class="ui green">
-          UI Index: <span id="m2ui">0.98</span> (Balanced)
-        </div>
-      </div>
-
-      <div class="monitor-wrap">
-        <div class="size-pill purple-pill" id="m3sizeLabel">14"</div>
-
-        <div class="monitor small" id="monitor3">
-          <div class="window purple-window">800x600 App</div>
-        </div>
-
-        <div class="monitor-title">Monitor 3</div>
-
-        <div class="meta">
-          Density: <span id="m3ppi">162</span> PPI
-        </div>
-
-        <div class="meta">
-          Scale: <span id="m3scaleText">175</span>%
-        </div>
-
-        <div class="ui green">
-          UI Index: <span id="m3ui">1.04</span> (Balanced)
-        </div>
-      </div>
-
+    <div class="subtitle">
+        Visualized: Physical Scale Comparison<br>
+        Box: 800x600 Logical Window size
     </div>
-  </div>
 
-  <div class="controls">
+    <div class="stage">
+        <div class="monitor-group theme-m1">
+            <div class="diag-label" id="m1-diag-label">24"</div>
+            <div class="monitor-bezel" id="m1-bezel">
+                <div class="app-window" id="m1-app">800x600 App</div>
+            </div>
+            <div class="stats">
+                <strong>Monitor 1</strong>
+                Density: <span id="m1-ppi">92</span> PPI<br>
+                Scale: <span id="m1-scale-text">100</span>%<br>
+                <span id="m1-ui-index" class="status-balanced">UI Index: 1.00 (Balanced)</span>
+            </div>
+        </div>
 
-    <div class="control-grid">
+        <div class="monitor-group theme-m2">
+            <div class="diag-label" id="m2-diag-label">24"</div>
+            <div class="monitor-bezel" id="m2-bezel">
+                <div class="app-window" id="m2-app">800x600 App</div>
+            </div>
+            <div class="stats">
+                <strong>Monitor 2</strong>
+                Density: <span id="m2-ppi">122</span> PPI<br>
+                Scale: <span id="m2-scale-text">125</span>%<br>
+                <span id="m2-ui-index" class="status-balanced">UI Index: 1.00 (Balanced)</span>
+            </div>
+        </div>
 
-      <div class="group">
-        <label>M1 Size (in)</label>
-        <input id="m1size" type="number" value="24">
-      </div>
-
-      <div class="group">
-        <label>M1 Width (px)</label>
-        <input id="m1width" type="number" value="1920">
-      </div>
-
-      <div class="group">
-        <label>M1 Height (px)</label>
-        <input id="m1height" type="number" value="1080">
-      </div>
-
-      <div class="group">
-        <label>M1 Scale (%)</label>
-        <input id="m1scale" type="number" value="100">
-      </div>
-
-      <div class="group">
-        <label>M2 Size (in)</label>
-        <input id="m2size" type="number" value="24">
-      </div>
-
-      <div class="group">
-        <label>M2 Width (px)</label>
-        <input id="m2width" type="number" value="2560">
-      </div>
-
-      <div class="group">
-        <label>M2 Height (px)</label>
-        <input id="m2height" type="number" value="1440">
-      </div>
-
-      <div class="group">
-        <label>M2 Scale (%)</label>
-        <input id="m2scale" type="number" value="125">
-      </div>
-
-      <div class="group">
-        <label>M3 Size (in)</label>
-        <input id="m3size" type="number" value="14">
-      </div>
-
-      <div class="group">
-        <label>M3 Width (px)</label>
-        <input id="m3width" type="number" value="1920">
-      </div>
-
-      <div class="group">
-        <label>M3 Height (px)</label>
-        <input id="m3height" type="number" value="1200">
-      </div>
-
-      <div class="group">
-        <label>M3 Scale (%)</label>
-        <input id="m3scale" type="number" value="175">
-      </div>
-
+        <div class="monitor-group theme-m3">
+            <div class="diag-label" id="m3-diag-label">14"</div>
+            <div class="monitor-bezel" id="m3-bezel">
+                <div class="app-window" id="m3-app">800x600 App</div>
+            </div>
+            <div class="stats">
+                <strong>Monitor 3</strong>
+                Density: <span id="m3-ppi">162</span> PPI<br>
+                Scale: <span id="m3-scale-text">175</span>%<br>
+                <span id="m3-ui-index" class="status-balanced">UI Index: 1.00 (Balanced)</span>
+            </div>
+        </div>
     </div>
-  </div>
 
+    <div class="controls">
+        <div class="control-panel" id="controls-m1"></div>
+        <div class="control-panel" id="controls-m2"></div>
+        <div class="control-panel" id="controls-m3"></div>
+    </div>
 </div>
 
-<script src="script.js"></script>
+<script>
+    // Initial Application State matching the screenshot
+    const state = {
+        m1: { size: 24, width: 1920, height: 1080, scale: 100 },
+        m2: { size: 24, width: 2560, height: 1440, scale: 125 },
+        m3: { size: 14, width: 1920, height: 1200, scale: 175 }
+    };
+
+    // Constants for math
+    const BASE_PPI = 91.79; // 24" 1080p standard
+    const BASE_SCALE = 1.0;
+    const BASE_UI_RATIO = BASE_SCALE / BASE_PPI;
+    const PIXELS_PER_PHYSICAL_INCH = 11.5; // Controls how large the monitors render on screen
+
+    function updateVisuals() {
+        ['m1', 'm2', 'm3'].forEach(id => {
+            const data = state[id];
+            
+            // 1. Calculate Metrics
+            const aspect = data.width / data.height;
+            const ppi = Math.sqrt(Math.pow(data.width, 2) + Math.pow(data.height, 2)) / data.size;
+            const scaleDecimal = data.scale / 100;
+            
+            const effWidth = Math.round(data.width / scaleDecimal);
+            const effHeight = Math.round(data.height / scaleDecimal);
+            
+            const uiRatio = scaleDecimal / ppi;
+            const uiIndex = uiRatio / BASE_UI_RATIO;
+
+            // Determine status color/text based on UI index
+            let statusClass = "status-balanced";
+            let statusText = "Balanced";
+            if (uiIndex < 0.85) { statusClass = "status-tiny"; statusText = "Tiny"; }
+            else if (uiIndex > 1.15) { statusClass = "status-large"; statusText = "Chunky"; }
+
+            // 2. Calculate Physical Screen Dimensions (Pythagorean theorem)
+            const physHeight = data.size / Math.sqrt(Math.pow(aspect, 2) + 1);
+            const physWidth = aspect * physHeight;
+            
+            const bezelEl = document.getElementById(`${id}-bezel`);
+            bezelEl.style.width = `${physWidth * PIXELS_PER_PHYSICAL_INCH}px`;
+            bezelEl.style.height = `${physHeight * PIXELS_PER_PHYSICAL_INCH}px`;
+
+            // 3. Calculate App Window Percentage Size
+            // (How much of the effective workspace does an 800x600 window take up?)
+            const appWPercent = (800 / effWidth) * 100;
+            const appHPercent = (600 / effHeight) * 100;
+            
+            const appEl = document.getElementById(`${id}-app`);
+            appEl.style.width = `${Math.min(appWPercent, 100)}%`;
+            appEl.style.height = `${Math.min(appHPercent, 100)}%`;
+
+            // 4. Update DOM Text Elements
+            document.getElementById(`${id}-work`).innerText = `${effWidth}x${effHeight}`;
+            document.getElementById(`${id}-diag-label`).innerText = `${data.size}"`;
+            document.getElementById(`${id}-ppi`).innerText = Math.round(ppi);
+            document.getElementById(`${id}-scale-text`).innerText = data.scale;
+            
+            const indexEl = document.getElementById(`${id}-ui-index`);
+            indexEl.innerText = `UI Index: ${uiIndex.toFixed(2)} (${statusText})`;
+            indexEl.className = statusClass;
+        });
+    }
+
+    // Function to dynamically build the control sliders
+    function buildControls(id) {
+        const container = document.getElementById(`controls-${id}`);
+        const labels = { size: 'Size (in)', width: 'Width (px)', height: 'Height (px)', scale: 'Scale (%)' };
+        
+        // Configuration for limits and step sizes
+        const configs = {
+            size: { min: 10, max: 45, step: 0.1 },
+            width: { min: 800, max: 5120, step: 1 },
+            height: { min: 600, max: 2880, step: 1 },
+            scale: { min: 50, max: 300, step: 1 }
+        };
+
+        const titlePrefix = id.toUpperCase();
+
+        Object.keys(state[id]).forEach(key => {
+            const config = configs[key];
+            const row = document.createElement('div');
+            row.className = 'control-row';
+            
+            row.innerHTML = `
+                <label>${titlePrefix} ${labels[key].split(' ')[0]}</label>
+                <input type="range" min="${config.min}" max="${config.max}" step="${config.step}" value="${state[id][key]}">
+                <input type="number" min="${config.min}" max="${config.max}" step="${config.step}" value="${state[id][key]}">
+            `;
+            
+            const rangeInput = row.querySelector('input[type="range"]');
+            const numberInput = row.querySelector('input[type="number"]');
+            
+            // Sync slider and number inputs, then update visuals
+            const syncValues = (val) => {
+                let numVal = parseFloat(val);
+                // Clamp to prevent breaking UI
+                if (numVal < config.min) numVal = config.min;
+                if (numVal > config.max) numVal = config.max;
+                
+                rangeInput.value = numVal;
+                numberInput.value = numVal;
+                state[id][key] = numVal;
+                updateVisuals();
+            };
+
+            rangeInput.addEventListener('input', (e) => syncValues(e.target.value));
+            numberInput.addEventListener('change', (e) => syncValues(e.target.value));
+            
+            container.appendChild(row);
+        });
+    }
+
+    // Initialize the app
+    ['m1', 'm2', 'm3'].forEach(id => buildControls(id));
+    updateVisuals();
+
+</script>
 </body>
 </html>
