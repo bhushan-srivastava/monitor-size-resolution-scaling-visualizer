@@ -1,276 +1,372 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Display Scaling Visualizer</title>
-    <style>
-        :root {
-            --bg-page: #121214;
-            --bg-card: #18181b;
-            --bg-panel: #202024;
-            --text-main: #f4f4f5;
-            --text-muted: #a1a1aa;
-            
-            --m1-color: #4facfe;
-            --m2-color: #43e97b;
-            --m3-color: #a18cd1;
-        }
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Display Scaling Visualizer</title>
 
-        body {
-            background-color: var(--bg-page);
-            color: var(--text-main);
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-            margin: 0;
-            padding: 40px 20px;
-            display: flex;
-            justify-content: center;
-        }
+<style>
+:root {
+    --bg-page: #121214;
+    --bg-card: #18181b;
+    --bg-panel: #202024;
+    --text-main: #f4f4f5;
+    --text-muted: #a1a1aa;
 
-        .container {
-            background-color: var(--bg-card);
-            border-radius: 16px;
-            padding: 30px;
-            width: 100%;
-            max-width: 1100px;
-            box-shadow: 0 10px 40px rgba(0,0,0,0.5);
-        }
+    --m1-color: #4facfe;
+    --m2-color: #43e97b;
+    --m3-color: #a18cd1;
+}
 
-        /* Header */
-        .header {
-            display: flex;
-            justify-content: space-between;
-            align-items: flex-start;
-            margin-bottom: 24px;
-        }
+body {
+    background-color: var(--bg-page);
+    color: var(--text-main);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    margin: 0;
+    padding: 40px 20px;
+    display: flex;
+    justify-content: center;
+}
 
-        .header h1 {
-            margin: 0;
-            font-size: 22px;
-            font-weight: 600;
-        }
+.container {
+    background-color: var(--bg-card);
+    border-radius: 16px;
+    padding: 30px;
+    width: 100%;
+    max-width: 1100px;
+    box-shadow: 0 10px 40px rgba(0,0,0,0.5);
+}
 
-        .workspaces {
-            display: flex;
-            gap: 24px;
-            font-family: monospace;
-            font-size: 15px;
-        }
+/* Header */
 
-        .workspace-col {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-        }
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 24px;
+}
 
-        .workspace-col .label {
-            color: var(--text-muted);
-            font-size: 11px;
-            font-family: sans-serif;
-            margin-bottom: 4px;
-            letter-spacing: 0.5px;
-            text-transform: uppercase;
-        }
+.header h1 {
+    margin: 0;
+    font-size: 22px;
+    font-weight: 600;
+}
 
-        .workspace-col .value { font-weight: bold; }
+.workspaces {
+    display: flex;
+    gap: 24px;
+    font-family: monospace;
+    font-size: 15px;
+}
 
-        .subtitle {
-            color: var(--text-muted);
-            font-size: 14px;
-            line-height: 1.5;
-            margin-bottom: 40px;
-        }
+.workspace-col {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
 
-        /* Visualizer Stage */
-        .stage {
-            display: flex;
-            justify-content: space-around;
-            align-items: center; /* changed from flex-end */
-            min-height: 420px;   /* give enough vertical room */
-            margin-bottom: 40px;
-            padding-bottom: 20px;
-            border-bottom: 1px solid #333;
-        }
+.workspace-col .label {
+    color: var(--text-muted);
+    font-size: 11px;
+    font-family: sans-serif;
+    margin-bottom: 4px;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+}
 
-        .monitor-group {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center; /* added */
-            width: 30%;
-        }
+.workspace-col .value {
+    font-weight: bold;
+}
 
-        .diag-label {
-            border: 2px solid;
-            border-radius: 20px;
-            padding: 4px 16px;
-            font-size: 12px;
-            font-weight: bold;
-            margin-bottom: 16px;
-            background-color: var(--bg-card);
-        }
+.subtitle {
+    color: var(--text-muted);
+    font-size: 14px;
+    line-height: 1.5;
+    margin-bottom: 40px;
+}
 
-        .monitor-bezel {
-            border: 2px solid;
-            background-color: rgba(255, 255, 255, 0.05);
-            position: relative;
-            display: flex;
-            justify-content: center;
-            align-items: center; /* keeps app window vertically centered */
-            box-sizing: border-box;
-            transition: all 0.2s ease;
-        }
+/* Stage */
 
-        .app-window {
-            border: 2px solid;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            font-size: 12px;
-            text-align: center;
-            box-sizing: border-box;
-            overflow: hidden;
-            white-space: nowrap;
-            transition: all 0.2s ease;
-        }
+.stage {
+    display: flex;
+    justify-content: space-around;
+    align-items: flex-start;
+    min-height: 520px;
+    margin-bottom: 40px;
+    padding-bottom: 20px;
+    border-bottom: 1px solid #333;
+}
 
-        .stats {
-            margin-top: 20px;
-            text-align: center;
-            font-size: 13px;
-            color: var(--text-muted);
-            line-height: 1.6;
-        }
+.monitor-group {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 30%;
+}
 
-        .stats strong {
-            display: block;
-            color: var(--text-main);
-            font-size: 16px;
-            margin-bottom: 4px;
-        }
+.diag-label {
+    border: 2px solid;
+    border-radius: 20px;
+    padding: 4px 16px;
+    font-size: 12px;
+    font-weight: bold;
+    margin-bottom: 16px;
+    background-color: var(--bg-card);
+}
 
-        /* Dynamic Theme Assignments */
-        .theme-m1 .diag-label, .theme-m1 .monitor-bezel, .theme-m1 .app-window { border-color: var(--m1-color); }
-        .theme-m2 .diag-label, .theme-m2 .monitor-bezel, .theme-m2 .app-window { border-color: var(--m2-color); }
-        .theme-m3 .diag-label, .theme-m3 .monitor-bezel, .theme-m3 .app-window { border-color: var(--m3-color); }
-        
-        .theme-m1 .app-window { background-color: rgba(79, 172, 254, 0.2); }
-        .theme-m2 .app-window { background-color: rgba(67, 233, 123, 0.2); }
-        .theme-m3 .app-window { background-color: rgba(161, 140, 209, 0.2); }
+/* THIS FIXES THE COMPARISON */
 
-        /* Controls */
-        .controls {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 20px;
-        }
+.monitor-center {
+    height: 300px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
 
-        .control-panel {
-            background-color: var(--bg-panel);
-            padding: 20px;
-            border-radius: 12px;
-        }
+.monitor-bezel {
+    border: 2px solid;
+    background-color: rgba(255,255,255,0.05);
+    position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    box-sizing: border-box;
+    transition: all 0.2s ease;
+}
 
-        .control-row {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            margin-bottom: 16px;
-        }
-        .control-row:last-child { margin-bottom: 0; }
+.app-window {
+    border: 2px solid;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 12px;
+    text-align: center;
+    box-sizing: border-box;
+    overflow: hidden;
+    white-space: nowrap;
+    transition: all 0.2s ease;
+}
 
-        .control-row label {
-            width: 90px;
-            font-size: 13px;
-            color: var(--text-muted);
-        }
+.stats {
+    margin-top: 20px;
+    text-align: center;
+    font-size: 13px;
+    color: var(--text-muted);
+    line-height: 1.6;
+}
 
-        .control-row input[type="range"] {
-            flex: 1;
-            margin: 0 12px;
-            accent-color: #666;
-            cursor: pointer;
-        }
+.stats strong {
+    display: block;
+    color: var(--text-main);
+    font-size: 16px;
+    margin-bottom: 4px;
+}
 
-        .control-row input[type="number"] {
-            width: 50px;
-            background-color: transparent;
-            border: 1px solid #444;
-            color: var(--text-main);
-            padding: 6px 8px;
-            border-radius: 6px;
-            text-align: center;
-            font-family: monospace;
-            font-size: 13px;
-        }
-        .control-row input[type="number"]:focus {
-            outline: none;
-            border-color: #888;
-        }
+/* Themes */
 
-        /* Status Colors */
-        .status-balanced { color: #43e97b; }
-        .status-tiny { color: #ff6b6b; }
-        .status-large { color: #feca57; }
+.theme-m1 .diag-label,
+.theme-m1 .monitor-bezel,
+.theme-m1 .app-window {
+    border-color: var(--m1-color);
+}
 
-    </style>
+.theme-m2 .diag-label,
+.theme-m2 .monitor-bezel,
+.theme-m2 .app-window {
+    border-color: var(--m2-color);
+}
+
+.theme-m3 .diag-label,
+.theme-m3 .monitor-bezel,
+.theme-m3 .app-window {
+    border-color: var(--m3-color);
+}
+
+.theme-m1 .app-window {
+    background-color: rgba(79,172,254,0.2);
+}
+
+.theme-m2 .app-window {
+    background-color: rgba(67,233,123,0.2);
+}
+
+.theme-m3 .app-window {
+    background-color: rgba(161,140,209,0.2);
+}
+
+/* Controls */
+
+.controls {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+}
+
+.control-panel {
+    background-color: var(--bg-panel);
+    padding: 20px;
+    border-radius: 12px;
+}
+
+.control-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 16px;
+}
+
+.control-row:last-child {
+    margin-bottom: 0;
+}
+
+.control-row label {
+    width: 90px;
+    font-size: 13px;
+    color: var(--text-muted);
+}
+
+.control-row input[type="range"] {
+    flex: 1;
+    margin: 0 12px;
+    accent-color: #666;
+    cursor: pointer;
+}
+
+.control-row input[type="number"] {
+    width: 50px;
+    background-color: transparent;
+    border: 1px solid #444;
+    color: var(--text-main);
+    padding: 6px 8px;
+    border-radius: 6px;
+    text-align: center;
+    font-family: monospace;
+    font-size: 13px;
+}
+
+.control-row input[type="number"]:focus {
+    outline: none;
+    border-color: #888;
+}
+
+.status-balanced {
+    color: #43e97b;
+}
+
+.status-tiny {
+    color: #ff6b6b;
+}
+
+.status-large {
+    color: #feca57;
+}
+</style>
 </head>
+
 <body>
 
 <div class="container">
+
     <div class="header">
         <h1>Display Scaling Visualizer</h1>
+
         <div class="workspaces">
-            <div class="workspace-col"><span class="label">M1 Work</span><span class="value" id="m1-work">1920x1080</span></div>
-            <div class="workspace-col"><span class="label">M2 Work</span><span class="value" id="m2-work">2048x1152</span></div>
-            <div class="workspace-col"><span class="label">M3 Work</span><span class="value" id="m3-work">1097x686</span></div>
+            <div class="workspace-col">
+                <span class="label">M1 Work</span>
+                <span class="value" id="m1-work">1920x1080</span>
+            </div>
+
+            <div class="workspace-col">
+                <span class="label">M2 Work</span>
+                <span class="value" id="m2-work">2048x1152</span>
+            </div>
+
+            <div class="workspace-col">
+                <span class="label">M3 Work</span>
+                <span class="value" id="m3-work">1097x686</span>
+            </div>
         </div>
     </div>
 
     <div class="subtitle">
-        Visualized: Physical Scale Comparison<br>
+        Visualized: Physical Scale Comparison<br />
         Box: 800x600 Logical Window size
     </div>
 
     <div class="stage">
+
+        <!-- M1 -->
+
         <div class="monitor-group theme-m1">
+
             <div class="diag-label" id="m1-diag-label">24"</div>
-            <div class="monitor-bezel" id="m1-bezel">
-                <div class="app-window" id="m1-app">800x600 App</div>
+
+            <div class="monitor-center">
+                <div class="monitor-bezel" id="m1-bezel">
+                    <div class="app-window" id="m1-app">
+                        800x600 App
+                    </div>
+                </div>
             </div>
+
             <div class="stats">
                 <strong>Monitor 1</strong>
-                Density: <span id="m1-ppi">92</span> PPI<br>
-                Scale: <span id="m1-scale-text">100</span>%<br>
-                <span id="m1-ui-index" class="status-balanced">UI Index: 1.00 (Balanced)</span>
+                Density: <span id="m1-ppi">92</span> PPI<br />
+                Scale: <span id="m1-scale-text">100</span>%<br />
+                <span id="m1-ui-index">
+                    UI Index: 1.00 (Balanced)
+                </span>
             </div>
         </div>
+
+        <!-- M2 -->
 
         <div class="monitor-group theme-m2">
+
             <div class="diag-label" id="m2-diag-label">24"</div>
-            <div class="monitor-bezel" id="m2-bezel">
-                <div class="app-window" id="m2-app">800x600 App</div>
+
+            <div class="monitor-center">
+                <div class="monitor-bezel" id="m2-bezel">
+                    <div class="app-window" id="m2-app">
+                        800x600 App
+                    </div>
+                </div>
             </div>
+
             <div class="stats">
                 <strong>Monitor 2</strong>
-                Density: <span id="m2-ppi">122</span> PPI<br>
-                Scale: <span id="m2-scale-text">125</span>%<br>
-                <span id="m2-ui-index" class="status-balanced">UI Index: 1.00 (Balanced)</span>
+                Density: <span id="m2-ppi">122</span> PPI<br />
+                Scale: <span id="m2-scale-text">125</span>%<br />
+                <span id="m2-ui-index">
+                    UI Index: 1.00 (Balanced)
+                </span>
             </div>
         </div>
 
+        <!-- M3 -->
+
         <div class="monitor-group theme-m3">
+
             <div class="diag-label" id="m3-diag-label">14"</div>
-            <div class="monitor-bezel" id="m3-bezel">
-                <div class="app-window" id="m3-app">800x600 App</div>
+
+            <div class="monitor-center">
+                <div class="monitor-bezel" id="m3-bezel">
+                    <div class="app-window" id="m3-app">
+                        800x600 App
+                    </div>
+                </div>
             </div>
+
             <div class="stats">
                 <strong>Monitor 3</strong>
-                Density: <span id="m3-ppi">162</span> PPI<br>
-                Scale: <span id="m3-scale-text">175</span>%<br>
-                <span id="m3-ui-index" class="status-balanced">UI Index: 1.00 (Balanced)</span>
+                Density: <span id="m3-ppi">162</span> PPI<br />
+                Scale: <span id="m3-scale-text">175</span>%<br />
+                <span id="m3-ui-index">
+                    UI Index: 1.00 (Balanced)
+                </span>
             </div>
         </div>
+
     </div>
 
     <div class="controls">
@@ -278,126 +374,202 @@
         <div class="control-panel" id="controls-m2"></div>
         <div class="control-panel" id="controls-m3"></div>
     </div>
+
 </div>
 
 <script>
-    // Initial Application State matching the screenshot
-    const state = {
-        m1: { size: 24, width: 1920, height: 1080, scale: 100 },
-        m2: { size: 24, width: 2560, height: 1440, scale: 125 },
-        m3: { size: 14, width: 1920, height: 1200, scale: 175 }
+const state = {
+    m1: { size: 24, width: 1920, height: 1080, scale: 100 },
+    m2: { size: 24, width: 2560, height: 1440, scale: 125 },
+    m3: { size: 14, width: 1920, height: 1200, scale: 175 }
+};
+
+const BASE_PPI = 96;
+const BASE_SCALE = 1.0;
+const BASE_UI_RATIO = BASE_SCALE / BASE_PPI;
+const PIXELS_PER_PHYSICAL_INCH = 11.5;
+
+function updateVisuals() {
+
+    ['m1', 'm2', 'm3'].forEach(id => {
+
+        const data = state[id];
+
+        const aspect = data.width / data.height;
+
+        const ppi =
+            Math.sqrt(
+                Math.pow(data.width, 2) +
+                Math.pow(data.height, 2)
+            ) / data.size;
+
+        const scaleDecimal = data.scale / 100;
+
+        const effWidth =
+            Math.round(data.width / scaleDecimal);
+
+        const effHeight =
+            Math.round(data.height / scaleDecimal);
+
+        const uiRatio = scaleDecimal / ppi;
+        const uiIndex = uiRatio / BASE_UI_RATIO;
+
+        let statusClass = "status-balanced";
+        let statusText = "Balanced";
+
+        if (uiIndex < 0.85) {
+            statusClass = "status-tiny";
+            statusText = "Tiny";
+        }
+        else if (uiIndex > 1.15) {
+            statusClass = "status-large";
+            statusText = "Chunky";
+        }
+
+        const physHeight =
+            data.size /
+            Math.sqrt(Math.pow(aspect, 2) + 1);
+
+        const physWidth =
+            aspect * physHeight;
+
+        const bezelEl =
+            document.getElementById(`${id}-bezel`);
+
+        bezelEl.style.width =
+            `${physWidth * PIXELS_PER_PHYSICAL_INCH}px`;
+
+        bezelEl.style.height =
+            `${physHeight * PIXELS_PER_PHYSICAL_INCH}px`;
+
+        const appWPercent =
+            (800 / effWidth) * 100;
+
+        const appHPercent =
+            (600 / effHeight) * 100;
+
+        const appEl =
+            document.getElementById(`${id}-app`);
+
+        appEl.style.width =
+            `${Math.min(appWPercent, 100)}%`;
+
+        appEl.style.height =
+            `${Math.min(appHPercent, 100)}%`;
+
+        document.getElementById(`${id}-work`).innerText =
+            `${effWidth}x${effHeight}`;
+
+        document.getElementById(`${id}-diag-label`).innerText =
+            `${data.size}"`;
+
+        document.getElementById(`${id}-ppi`).innerText =
+            Math.round(ppi);
+
+        document.getElementById(`${id}-scale-text`).innerText =
+            data.scale;
+
+        const indexEl =
+            document.getElementById(`${id}-ui-index`);
+
+        indexEl.innerText =
+            `UI Index: ${uiIndex.toFixed(2)} (${statusText})`;
+
+        indexEl.className = statusClass;
+    });
+}
+
+function buildControls(id) {
+
+    const container =
+        document.getElementById(`controls-${id}`);
+
+    const labels = {
+        size: 'Size',
+        width: 'Width',
+        height: 'Height',
+        scale: 'Scale'
     };
 
-    // Constants for math
-    // const BASE_PPI = 91.79; // 24" 1080p standard
-    const BASE_PPI = 96; // Windows logical standard
-    const BASE_SCALE = 1.0;
-    const BASE_UI_RATIO = BASE_SCALE / BASE_PPI;
-    const PIXELS_PER_PHYSICAL_INCH = 11.5; // Controls how large the monitors render on screen
+    const configs = {
+        size: { min: 10, max: 45, step: 0.1 },
+        width: { min: 800, max: 5120, step: 1 },
+        height: { min: 600, max: 2880, step: 1 },
+        scale: { min: 50, max: 300, step: 1 }
+    };
 
-    function updateVisuals() {
-        ['m1', 'm2', 'm3'].forEach(id => {
-            const data = state[id];
-            
-            // 1. Calculate Metrics
-            const aspect = data.width / data.height;
-            const ppi = Math.sqrt(Math.pow(data.width, 2) + Math.pow(data.height, 2)) / data.size;
-            const scaleDecimal = data.scale / 100;
-            
-            const effWidth = Math.round(data.width / scaleDecimal);
-            const effHeight = Math.round(data.height / scaleDecimal);
-            
-            const uiRatio = scaleDecimal / ppi;
-            const uiIndex = uiRatio / BASE_UI_RATIO;
+    const titlePrefix = id.toUpperCase();
 
-            // Determine status color/text based on UI index
-            let statusClass = "status-balanced";
-            let statusText = "Balanced";
-            if (uiIndex < 0.85) { statusClass = "status-tiny"; statusText = "Tiny"; }
-            else if (uiIndex > 1.15) { statusClass = "status-large"; statusText = "Chunky"; }
+    Object.keys(state[id]).forEach(key => {
 
-            // 2. Calculate Physical Screen Dimensions (Pythagorean theorem)
-            const physHeight = data.size / Math.sqrt(Math.pow(aspect, 2) + 1);
-            const physWidth = aspect * physHeight;
-            
-            const bezelEl = document.getElementById(`${id}-bezel`);
-            bezelEl.style.width = `${physWidth * PIXELS_PER_PHYSICAL_INCH}px`;
-            bezelEl.style.height = `${physHeight * PIXELS_PER_PHYSICAL_INCH}px`;
+        const config = configs[key];
 
-            // 3. Calculate App Window Percentage Size
-            // (How much of the effective workspace does an 800x600 window take up?)
-            const appWPercent = (800 / effWidth) * 100;
-            const appHPercent = (600 / effHeight) * 100;
-            
-            const appEl = document.getElementById(`${id}-app`);
-            appEl.style.width = `${Math.min(appWPercent, 100)}%`;
-            appEl.style.height = `${Math.min(appHPercent, 100)}%`;
+        const row = document.createElement('div');
 
-            // 4. Update DOM Text Elements
-            document.getElementById(`${id}-work`).innerText = `${effWidth}x${effHeight}`;
-            document.getElementById(`${id}-diag-label`).innerText = `${data.size}"`;
-            document.getElementById(`${id}-ppi`).innerText = Math.round(ppi);
-            document.getElementById(`${id}-scale-text`).innerText = data.scale;
-            
-            const indexEl = document.getElementById(`${id}-ui-index`);
-            indexEl.innerText = `UI Index: ${uiIndex.toFixed(2)} (${statusText})`;
-            indexEl.className = statusClass;
-        });
-    }
+        row.className = 'control-row';
 
-    // Function to dynamically build the control sliders
-    function buildControls(id) {
-        const container = document.getElementById(`controls-${id}`);
-        const labels = { size: 'Size (in)', width: 'Width (px)', height: 'Height (px)', scale: 'Scale (%)' };
-        
-        // Configuration for limits and step sizes
-        const configs = {
-            size: { min: 10, max: 45, step: 0.1 },
-            width: { min: 800, max: 5120, step: 1 },
-            height: { min: 600, max: 2880, step: 1 },
-            scale: { min: 50, max: 300, step: 1 }
+        row.innerHTML = `
+            <label>${titlePrefix} ${labels[key]}</label>
+
+            <input
+                type="range"
+                min="${config.min}"
+                max="${config.max}"
+                step="${config.step}"
+                value="${state[id][key]}"
+            >
+
+            <input
+                type="number"
+                min="${config.min}"
+                max="${config.max}"
+                step="${config.step}"
+                value="${state[id][key]}"
+            >
+        `;
+
+        const rangeInput =
+            row.querySelector('input[type="range"]');
+
+        const numberInput =
+            row.querySelector('input[type="number"]');
+
+        const syncValues = (val) => {
+
+            let numVal = parseFloat(val);
+
+            if (numVal < config.min)
+                numVal = config.min;
+
+            if (numVal > config.max)
+                numVal = config.max;
+
+            rangeInput.value = numVal;
+            numberInput.value = numVal;
+
+            state[id][key] = numVal;
+
+            updateVisuals();
         };
 
-        const titlePrefix = id.toUpperCase();
+        rangeInput.addEventListener(
+            'input',
+            (e) => syncValues(e.target.value)
+        );
 
-        Object.keys(state[id]).forEach(key => {
-            const config = configs[key];
-            const row = document.createElement('div');
-            row.className = 'control-row';
-            
-            row.innerHTML = `
-                <label>${titlePrefix} ${labels[key].split(' ')[0]}</label>
-                <input type="range" min="${config.min}" max="${config.max}" step="${config.step}" value="${state[id][key]}">
-                <input type="number" min="${config.min}" max="${config.max}" step="${config.step}" value="${state[id][key]}">
-            `;
-            
-            const rangeInput = row.querySelector('input[type="range"]');
-            const numberInput = row.querySelector('input[type="number"]');
-            
-            // Sync slider and number inputs, then update visuals
-            const syncValues = (val) => {
-                let numVal = parseFloat(val);
-                // Clamp to prevent breaking UI
-                if (numVal < config.min) numVal = config.min;
-                if (numVal > config.max) numVal = config.max;
-                
-                rangeInput.value = numVal;
-                numberInput.value = numVal;
-                state[id][key] = numVal;
-                updateVisuals();
-            };
+        numberInput.addEventListener(
+            'change',
+            (e) => syncValues(e.target.value)
+        );
 
-            rangeInput.addEventListener('input', (e) => syncValues(e.target.value));
-            numberInput.addEventListener('change', (e) => syncValues(e.target.value));
-            
-            container.appendChild(row);
-        });
-    }
+        container.appendChild(row);
+    });
+}
 
-    // Initialize the app
-    ['m1', 'm2', 'm3'].forEach(id => buildControls(id));
-    updateVisuals();
+['m1', 'm2', 'm3'].forEach(id => buildControls(id));
 
+updateVisuals();
 </script>
+
 </body>
 </html>
