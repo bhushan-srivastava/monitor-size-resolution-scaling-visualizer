@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Display Scaling Visualizer</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+<div class="app">
+
+  <div class="topbar">
+    <h1>Display Scaling Visualizer</h1>
+
+    <div class="work-grid">
+      <div>
+        <span>M1 WORK</span>
+        <strong id="m1work">1920x1080</strong>
+      </div>
+
+      <div>
+        <span>M2 WORK</span>
+        <strong id="m2work">2048x1152</strong>
+      </div>
+
+      <div>
+        <span>M3 WORK</span>
+        <strong id="m3work">1097x686</strong>
+      </div>
+    </div>
+  </div>
+
+  <div class="visualizer">
+
+    <div class="label">
+      Visualized: Physical Scale Comparison<br>
+      Box: 800x600 Logical Window size
+    </div>
+
+    <div class="monitors" id="monitors">
+
+      <div class="monitor-wrap">
+        <div class="size-pill" id="m1sizeLabel">24"</div>
+
+        <div class="monitor" id="monitor1">
+          <div class="window blue">800x600 App</div>
+        </div>
+
+        <div class="monitor-title">Monitor 1</div>
+
+        <div class="meta">
+          Density: <span id="m1ppi">92</span> PPI
+        </div>
+
+        <div class="meta">
+          Scale: <span id="m1scaleText">100</span>%
+        </div>
+
+        <div class="ui green">
+          UI Index: <span id="m1ui">1.05</span> (Balanced)
+        </div>
+      </div>
+
+      <div class="monitor-wrap">
+        <div class="size-pill green-pill" id="m2sizeLabel">24"</div>
+
+        <div class="monitor" id="monitor2">
+          <div class="window green-window">800x600 App</div>
+        </div>
+
+        <div class="monitor-title">Monitor 2</div>
+
+        <div class="meta">
+          Density: <span id="m2ppi">122</span> PPI
+        </div>
+
+        <div class="meta">
+          Scale: <span id="m2scaleText">125</span>%
+        </div>
+
+        <div class="ui green">
+          UI Index: <span id="m2ui">0.98</span> (Balanced)
+        </div>
+      </div>
+
+      <div class="monitor-wrap">
+        <div class="size-pill purple-pill" id="m3sizeLabel">14"</div>
+
+        <div class="monitor small" id="monitor3">
+          <div class="window purple-window">800x600 App</div>
+        </div>
+
+        <div class="monitor-title">Monitor 3</div>
+
+        <div class="meta">
+          Density: <span id="m3ppi">162</span> PPI
+        </div>
+
+        <div class="meta">
+          Scale: <span id="m3scaleText">175</span>%
+        </div>
+
+        <div class="ui green">
+          UI Index: <span id="m3ui">1.04</span> (Balanced)
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <div class="controls">
+
+    <div class="control-grid">
+
+      <div class="group">
+        <label>M1 Size (in)</label>
+        <input id="m1size" type="number" value="24">
+      </div>
+
+      <div class="group">
+        <label>M1 Width (px)</label>
+        <input id="m1width" type="number" value="1920">
+      </div>
+
+      <div class="group">
+        <label>M1 Height (px)</label>
+        <input id="m1height" type="number" value="1080">
+      </div>
+
+      <div class="group">
+        <label>M1 Scale (%)</label>
+        <input id="m1scale" type="number" value="100">
+      </div>
+
+      <div class="group">
+        <label>M2 Size (in)</label>
+        <input id="m2size" type="number" value="24">
+      </div>
+
+      <div class="group">
+        <label>M2 Width (px)</label>
+        <input id="m2width" type="number" value="2560">
+      </div>
+
+      <div class="group">
+        <label>M2 Height (px)</label>
+        <input id="m2height" type="number" value="1440">
+      </div>
+
+      <div class="group">
+        <label>M2 Scale (%)</label>
+        <input id="m2scale" type="number" value="125">
+      </div>
+
+      <div class="group">
+        <label>M3 Size (in)</label>
+        <input id="m3size" type="number" value="14">
+      </div>
+
+      <div class="group">
+        <label>M3 Width (px)</label>
+        <input id="m3width" type="number" value="1920">
+      </div>
+
+      <div class="group">
+        <label>M3 Height (px)</label>
+        <input id="m3height" type="number" value="1200">
+      </div>
+
+      <div class="group">
+        <label>M3 Scale (%)</label>
+        <input id="m3scale" type="number" value="175">
+      </div>
+
+    </div>
+  </div>
+
+</div>
+
+<script src="script.js"></script>
+</body>
+</html>
